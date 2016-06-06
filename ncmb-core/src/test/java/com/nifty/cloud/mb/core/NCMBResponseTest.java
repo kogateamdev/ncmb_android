@@ -13,7 +13,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.File;
@@ -24,7 +23,7 @@ import java.net.URL;
 /**
  * NCMBResponse自動化テストクラス
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(CustomRobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21, manifest = Config.NONE)
 public class NCMBResponseTest {
     private MockWebServer mServer;
@@ -34,20 +33,22 @@ public class NCMBResponseTest {
 
         @Override
         public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-            if (request.getMethod().equals(Constants.HTTP_METHOD_GET) && request.getPath().equals("/2013-09-01/classes/TestClass")){
-                return new MockResponse().setHeader("X-NCMB-Response-Signature","tLTbS3aMV7PT2N8Qy38UZoNjySRFHmJJ3tEPS1J2SS0=")
-                                         .setHeader("Content-Type","application/json")
-                                         .setResponseCode(201)
-                                         .setBody(readJsonResponse("valid_get_response.json"));
+            if (request.getMethod().equals(Constants.HTTP_METHOD_GET) && request.getPath().equals("/2013-09-01/classes/TestClass")) {
+                return new MockResponse().setHeader("X-NCMB-Response-Signature", "tLTbS3aMV7PT2N8Qy38UZoNjySRFHmJJ3tEPS1J2SS0=")
+                        .setHeader("Content-Type", "application/json")
+                        .setResponseCode(201)
+                        .setBody(readJsonResponse("valid_get_response.json"));
             }
             return new MockResponse().setResponseCode(404).setBody(readJsonResponse("valid_error_response.json"));
         }
     };
 
-    /*** Utilities ***/
+    /***
+     * Utilities
+     ***/
 
     public String readJsonResponse(String file_name) {
-        File file = new File("src/test/assets/json/"+file_name);
+        File file = new File("src/test/assets/json/" + file_name);
         String json = null;
         try {
             json = FileUtils.fileRead(file);
@@ -77,13 +78,13 @@ public class NCMBResponseTest {
      * - 結果：値が正しく設定されていること
      */
     @Test
-    public void responsePropertyCheck() throws Exception{
+    public void responsePropertyCheck() throws Exception {
         URL url = mServer.getUrl("/2013-09-01/classes/TestClass");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.connect();
         NCMBResponse response = new NCMBResponse(urlConnection.getInputStream(),
-                                                 urlConnection.getResponseCode(),
-                                                 urlConnection.getHeaderFields());
+                urlConnection.getResponseCode(),
+                urlConnection.getHeaderFields());
 
         //プロパティの値を取得
         int statusCode = response.statusCode;
@@ -100,7 +101,7 @@ public class NCMBResponseTest {
      * - 結果：レスポンスシグネチャが正しく比較されること
      */
     @Test
-    public void responseSignatureCheck() throws Exception{
+    public void responseSignatureCheck() throws Exception {
         //レスポンスシグネチャ検証未実装
     }
 
