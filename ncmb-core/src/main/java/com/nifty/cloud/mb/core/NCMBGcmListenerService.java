@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.nifty.cloud.mb.core.NCMBDialogPushConfiguration;
+import com.nifty.cloud.mb.core.NCMBPush;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,8 +32,11 @@ public class NCMBGcmListenerService extends GcmListenerService {
     static final String SMALL_ICON_KEY = "smallIcon";
     static final String NOTIFICATION_OVERLAP_KEY = "notificationOverlap";
 
+
     @Override
     public void onMessageReceived(String from, Bundle data) {
+
+
         sendNotification(data);
     }
 
@@ -160,6 +165,7 @@ public class NCMBGcmListenerService extends GcmListenerService {
                 .setSmallIcon(icon)//通知エリアのアイコン設定
                 .setContentTitle(title)
                 .setContentText(message)
+                .setTicker(title + " - " + message)
                 .setAutoCancel(true)//通知をタップしたら自動で削除する
                 .setSound(defaultSoundUri)//端末のデフォルトサウンド
                 .setContentIntent(pendingIntent);//通知をタップした際に起動するActivity

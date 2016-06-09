@@ -1,10 +1,14 @@
 package com.nifty.cloud.mb.core;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Build;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -921,6 +925,12 @@ public class NCMBPush extends NCMBBase {
             return;
         }
 
+        boolean isRunningInForeground = isRunningInForeground(context);
+        if(isRunningInForeground){
+            // Do not show Notification dialog when App running on foreground
+            return;
+        }
+
         ApplicationInfo appInfo;
         String activityName = "";
         try {
@@ -941,6 +951,35 @@ public class NCMBPush extends NCMBBase {
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_MESSAGE, bundle.getString("message"));
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_DISPLAYTYPE, dialogPushConfiguration.getDisplayType());
         context.getApplicationContext().startActivity(intent);
+    }
+
+
+    /**
+     * Check application is running on background or foreground
+     *
+     * @param context                 context
+     * @param result: true if running on foreground. Otherwise, return false
+     */
+    private static boolean isRunningInForeground(Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        String topActivityName = "";
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+            List<ActivityManager.RunningAppProcessInfo> processInfos = manager.getRunningAppProcesses();
+            if (processInfos == null || processInfos.isEmpty()) {
+                return false;
+            }
+            topActivityName = processInfos.get(0).processName;
+         } else {
+            List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
+            if (tasks == null || tasks.isEmpty()) {
+                return false;
+            }
+            topActivityName = tasks.get(0).topActivity.getPackageName();
+         }
+
+        boolean result = topActivityName.equalsIgnoreCase(context.getPackageName());
+        return result;
     }
 
     // endregion
