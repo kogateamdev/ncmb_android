@@ -32,10 +32,15 @@ public class NCMBGcmListenerService extends GcmListenerService {
     static final String SMALL_ICON_KEY = "smallIcon";
     static final String NOTIFICATION_OVERLAP_KEY = "notificationOverlap";
 
+    // NCMBDialogPushConfigurationクラスのインスタンスを作成
+    public static NCMBDialogPushConfiguration dialogPushConfiguration = new NCMBDialogPushConfiguration();
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
 
+        // Binh: display Notification dialog when receive push notification message
+        dialogPushConfiguration.setDisplayType(NCMBDialogPushConfiguration.DIALOG_DISPLAY_DIALOG);
+        NCMBPush.dialogPushHandler(this, data, dialogPushConfiguration);
 
         sendNotification(data);
     }
