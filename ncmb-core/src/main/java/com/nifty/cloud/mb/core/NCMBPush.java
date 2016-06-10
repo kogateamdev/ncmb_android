@@ -926,8 +926,8 @@ public class NCMBPush extends NCMBBase {
         }
 
         boolean isRunningInForeground = isRunningInForeground(context);
-        if(isRunningInForeground){
-            // Do not show Notification dialog when App running on foreground
+        if(isRunningInForeground == false){
+            // Do not show Notification dialog when App running on background
             return;
         }
 
