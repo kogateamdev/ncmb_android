@@ -42,6 +42,9 @@ public class NCMBPush extends NCMBBase {
             "richUrl", "badgeSetting", "category",
             "acl", "createDate", "updateDate");
 
+    private static final String PUSH_ID_KEY = "com.nifty.PushId";
+    private static final String JSON_KEY = "com.nifty.Data";
+
     // region getter
 
     /**
@@ -940,6 +943,13 @@ public class NCMBPush extends NCMBBase {
             e.printStackTrace();
         }
 
+        String notificationMeg = bundle.getString("message");
+
+        /* Get JSON data in Notification message */
+        String jsonData = getJsonDataFromNifty(bundle);
+        notificationMeg = notificationMeg + " ** " + jsonData; // TODO: For testing => remove later
+
+
         //NCMBDialogActivityクラスを呼び出す
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setClass(context.getApplicationContext(), NCMBDialogActivity.class);
@@ -948,7 +958,7 @@ public class NCMBPush extends NCMBBase {
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_THEME, android.R.style.Theme_Wallpaper_NoTitleBar);
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_LAUNCH_CLASS, activityName);
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_SUBJECT, bundle.getString("title"));
-        intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_MESSAGE, bundle.getString("message"));
+        intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_MESSAGE, notificationMeg);
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_DISPLAYTYPE, dialogPushConfiguration.getDisplayType());
         context.getApplicationContext().startActivity(intent);
     }
@@ -980,6 +990,51 @@ public class NCMBPush extends NCMBBase {
 
         boolean result = topActivityName.equalsIgnoreCase(context.getPackageName());
         return result;
+    }
+
+    /**
+     * Is from nifty or not.
+     *
+     * @return true=from nifty, false=otherwise
+     */
+    public static boolean isDataFromNifty(final Bundle bundle) {
+        return (bundle != null && bundle.containsKey(PUSH_ID_KEY));
+    }
+
+    /**
+     * Has json data or not.
+     *
+     * @return true=has, false=not have
+     */
+    public static boolean hasDataJson(final Bundle bundle) {
+        return (bundle != null && bundle.containsKey(JSON_KEY));
+    }
+
+    /**
+     * Get JSON data in Notification message from Nifty server
+     *
+     * @return data
+     */
+    private static String getJsonDataFromNifty(final Bundle bundle){
+        String dataMessage = "No JSON data in Notification message";
+        Bundle mBundle = new Bundle();
+
+        if (null != bundle) {
+            for (String key : bundle.keySet()) {
+                mBundle.putString(key, bundle.getString(key));
+            }
+        }
+
+        boolean isDataFromNifty = isDataFromNifty(mBundle);
+        boolean hasDataJson = hasDataJson(mBundle);
+
+        if(isDataFromNifty && hasDataJson){
+            dataMessage = mBundle.getString(JSON_KEY);
+        }
+
+        dataMessage = " -- isDataFromNifty: " + isDataFromNifty + " - hasDataJson: " + hasDataJson + " -- JSON data: " + dataMessage;
+
+        return dataMessage;
     }
 
     // endregion
