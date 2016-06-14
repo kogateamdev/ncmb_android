@@ -947,7 +947,7 @@ public class NCMBPush extends NCMBBase {
 
         /* Get JSON data in Notification message */
         String jsonData = getJsonDataFromNifty(bundle);
-        notificationMeg = notificationMeg + " ** " + jsonData; // TODO: For testing => remove later
+        //notificationMeg = notificationMeg + " ** " + jsonData; // TODO: For testing => remove later
 
 
         //NCMBDialogActivityクラスを呼び出す
