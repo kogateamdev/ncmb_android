@@ -3,6 +3,7 @@ package com.nifty.cloud.mb.core;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -934,6 +935,12 @@ public class NCMBPush extends NCMBBase {
             return;
         }
 
+        boolean isLockedScreen = isLockedScreen(context);
+        if(isLockedScreen){
+            // Do not display dialog when device is in locked screen
+            return;
+        }
+
         ApplicationInfo appInfo;
         String activityName = "";
         try {
@@ -1035,6 +1042,18 @@ public class NCMBPush extends NCMBBase {
         dataMessage = " -- isDataFromNifty: " + isDataFromNifty + " - hasDataJson: " + hasDataJson + " -- JSON data: " + dataMessage;
 
         return dataMessage;
+    }
+
+    /**
+     * Get JSON data in Notification message from Nifty server.
+     * Note:  method doesn't work if screenlock is set to "None" in settings --> security --> screenlock.
+     * @param context
+     * @return true if screen is in locked mode. Otherwise, return false.
+     */
+    private static boolean isLockedScreen(Context context){
+        KeyguardManager myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+        boolean isPhoneLocked = myKM.inKeyguardRestrictedInputMode();
+        return isPhoneLocked;
     }
 
     // endregion
