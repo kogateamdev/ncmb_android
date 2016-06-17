@@ -986,7 +986,18 @@ public class NCMBPush extends NCMBBase {
             if (processInfos == null || processInfos.isEmpty()) {
                 return false;
             }
-            topActivityName = processInfos.get(0).processName;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                // For Android version >= 5.1
+                for (RunningAppProcessInfo appProcess : processInfos) {
+                  if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    topActivityName = appProcess.processName;
+                  }
+                }
+            }else{
+                // For Android version > 4.4 && <= 5.0
+                topActivityName = processInfos.get(0).processName;
+            }
          } else {
             List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
             if (tasks == null || tasks.isEmpty()) {
