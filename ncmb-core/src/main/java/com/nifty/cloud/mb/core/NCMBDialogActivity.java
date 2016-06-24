@@ -59,6 +59,10 @@ public class NCMBDialogActivity extends Activity {
     // ユーザ定義レイアウトファイル用　表示ボタン
     final String USER_DEFINE_OPEN_BUTTON = "ncmb_button_open";
 
+    // Button labels for Notification dialog
+    public static final String CLOSE_BUTTON_LABEL = "閉じる";
+    public static final String OPEN_BUTTON_LABEL = "詳細";
+
     PowerManager.WakeLock mWakelock;
     MyTimerTask timerTask = null;
     Timer mTimer = null;
@@ -468,17 +472,17 @@ public class NCMBDialogActivity extends Activity {
         closeButton.setHeight(convertDpToPixel(40));
         closeButton.setBackgroundDrawable(buttonDrawable);
         closeButton.setPadding(convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2));
-        closeButton.setText("閉じる");
+        closeButton.setText(CLOSE_BUTTON_LABEL);
 
         closeButton.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     String a = "1";
-                    closeButton.setText("閉じる" + a);
+                    closeButton.setText(CLOSE_BUTTON_LABEL + a);
                 } else {
                     String b = "2";
-                    closeButton.setText("閉じる" + b);
+                    closeButton.setText(CLOSE_BUTTON_LABEL + b);
                 }
             }
         });
@@ -523,7 +527,7 @@ public class NCMBDialogActivity extends Activity {
         openButton.setHeight(convertDpToPixel(40));
         openButton.setBackgroundDrawable(buttonDrawable);
         openButton.setPadding(convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2));
-        openButton.setText("表示");
+        openButton.setText(OPEN_BUTTON_LABEL);
         openButton.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View arg0, MotionEvent event) {
