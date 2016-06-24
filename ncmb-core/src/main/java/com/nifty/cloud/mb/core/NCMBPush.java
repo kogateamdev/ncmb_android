@@ -919,10 +919,10 @@ public class NCMBPush extends NCMBBase {
      * @param dialogPushConfiguration push settings
      */
     public static void dialogPushHandler(Context context, Bundle bundle, NCMBDialogPushConfiguration dialogPushConfiguration) {
-        if (!bundle.containsKey("com.nifty.Dialog")) {
-            //dialogが有効になっていない場合
-            return;
-        }
+        // if (!bundle.containsKey("com.nifty.Dialog")) {
+        //     //dialogが有効になっていない場合
+        //     return;
+        // }
 
         if (dialogPushConfiguration.getDisplayType() == NCMBDialogPushConfiguration.DIALOG_DISPLAY_NONE) {
             //ダイアログ設定クラスの表示形式が"表示しない"(DIALOG_DISPLAY_NONE)場合
