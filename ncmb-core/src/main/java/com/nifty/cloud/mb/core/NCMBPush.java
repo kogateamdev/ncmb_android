@@ -956,6 +956,15 @@ public class NCMBPush extends NCMBBase {
         String jsonData = getJsonDataFromNifty(bundle);
         //notificationMeg = notificationMeg + " ** " + jsonData; // TODO: For testing => remove later
 
+        if(jsonData != null && !jsonData.isEmpty()){
+            boolean isJSONNiftyDataContainsNewsType = isJSONNiftyDataContainsNewsType(jsonData);
+            if(isJSONNiftyDataContainsNewsType){
+                dialogPushConfiguration.setNoOfButton(NCMBDialogPushConfiguration.DIALOG_DISPLAY_TWO_BUTTON);
+            }else{
+                dialogPushConfiguration.setNoOfButton(NCMBDialogPushConfiguration.DIALOG_DISPLAY_ONE_BUTTON);
+            }
+        }
+
 
         //NCMBDialogActivityクラスを呼び出す
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -967,13 +976,14 @@ public class NCMBPush extends NCMBBase {
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_SUBJECT, bundle.getString("title"));
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_MESSAGE, notificationMeg);
         intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_DISPLAYTYPE, dialogPushConfiguration.getDisplayType());
+        intent.putExtra(NCMBDialogActivity.INTENT_EXTRA_NO_OF_BUTTONS, dialogPushConfiguration.getNoOfButton());
         context.getApplicationContext().startActivity(intent);
     }
 
 
     /**
      * Check application is running on background or foreground
-     *
+     * Author: Trinh Thanh Binh
      * @param context                 context
      * @param result: true if running on foreground. Otherwise, return false
      */
@@ -1012,7 +1022,7 @@ public class NCMBPush extends NCMBBase {
 
     /**
      * Is from nifty or not.
-     *
+     * Author: Trinh Thanh Binh
      * @return true=from nifty, false=otherwise
      */
     public static boolean isDataFromNifty(final Bundle bundle) {
@@ -1021,7 +1031,7 @@ public class NCMBPush extends NCMBBase {
 
     /**
      * Has json data or not.
-     *
+     * Author: Trinh Thanh Binh
      * @return true=has, false=not have
      */
     public static boolean hasDataJson(final Bundle bundle) {
@@ -1030,7 +1040,7 @@ public class NCMBPush extends NCMBBase {
 
     /**
      * Get JSON data in Notification message from Nifty server
-     *
+     * Author: Trinh Thanh Binh
      * @return data
      */
     private static String getJsonDataFromNifty(final Bundle bundle){
@@ -1050,7 +1060,7 @@ public class NCMBPush extends NCMBBase {
             dataMessage = mBundle.getString(JSON_KEY);
         }
 
-        dataMessage = " -- isDataFromNifty: " + isDataFromNifty + " - hasDataJson: " + hasDataJson + " -- JSON data: " + dataMessage;
+        // dataMessage = " -- isDataFromNifty: " + isDataFromNifty + " - hasDataJson: " + hasDataJson + " -- JSON data: " + dataMessage;
 
         return dataMessage;
     }
@@ -1058,6 +1068,7 @@ public class NCMBPush extends NCMBBase {
     /**
      * Get JSON data in Notification message from Nifty server.
      * Note:  method doesn't work if screenlock is set to "None" in settings --> security --> screenlock.
+     * Author: Trinh Thanh Binh
      * @param context
      * @return true if screen is in locked mode. Otherwise, return false.
      */
@@ -1065,6 +1076,33 @@ public class NCMBPush extends NCMBBase {
         KeyguardManager myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         boolean isPhoneLocked = myKM.inKeyguardRestrictedInputMode();
         return isPhoneLocked;
+    }
+
+
+    /*
+     * Check if Json data from Nifty contain: "type": "news"
+     * Author: Trinh Thanh Binh
+     * @return: true if existed. Otherwise, return false.
+     */
+    private static boolean isJSONNiftyDataContainsNewsType(String jsonData) {
+        String TYPE_STR = "\"type\"";
+        String NEWS_TYPE = "\"news\"";
+        boolean isHasNewsType = false;
+
+        String jsonDataFromNifty = jsonData;
+        String[] dataArray = jsonDataFromNifty.replace( "{", "" ).replace( "}", "" ).split( "," );
+        for(String data : dataArray) {
+            String dataStr = new String( data );
+            String[] typeArray = dataStr.split( ":" );
+            if( typeArray != null && typeArray.length == 2
+                    && TYPE_STR.equalsIgnoreCase( typeArray[0].trim() )
+                    && NEWS_TYPE.equalsIgnoreCase( typeArray[1].trim() ) ) {
+                isHasNewsType = true;
+                break;
+            }
+        }
+
+        return isHasNewsType;
     }
 
     // endregion

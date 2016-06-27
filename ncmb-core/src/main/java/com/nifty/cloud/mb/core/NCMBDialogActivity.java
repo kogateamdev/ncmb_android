@@ -47,6 +47,7 @@ public class NCMBDialogActivity extends Activity {
     static final String INTENT_EXTRA_SUBJECT = "SUBJECT";
     static final String INTENT_EXTRA_MESSAGE = "MESSAGE";
     static final String INTENT_EXTRA_DISPLAYTYPE = "DISPLAY_TYPE";
+    static final String INTENT_EXTRA_NO_OF_BUTTONS = "NO_OF_BUTTONS";
 
     // ユーザ定義レイアウトファイル名NCMBDialogActivity
     final String USER_LAYOUT_FILE_NAME = "ncmb_notification_dialog";
@@ -70,6 +71,8 @@ public class NCMBDialogActivity extends Activity {
     boolean charDialog = false;
     int displayType = 0;
     int backgroundImage = 0;
+    // Number of buttons on Notification dialog
+    int noOfButtons = 0;
 
     private FrameLayout frameLayout;
 
@@ -236,6 +239,8 @@ public class NCMBDialogActivity extends Activity {
     private void selectDialogType(){
         // 表示形式を取得
         displayType = (Integer) getIntent().getExtras().get(INTENT_EXTRA_DISPLAYTYPE);
+
+        noOfButtons = (Integer) getIntent().getExtras().get(INTENT_EXTRA_NO_OF_BUTTONS);
 
         if (displayType == NCMBDialogPushConfiguration.DIALOG_DISPLAY_DIALOG) {
             // ダイアログの表示形式がダイアログの場合
@@ -505,55 +510,62 @@ public class NCMBDialogActivity extends Activity {
         closeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                // finish();
+                onClickCloseButton(v);
             }
         });
 
-        // ボタン間のスペース
-        View betweenCloseToOpen = new View(this);
-        LinearLayout.LayoutParams betweenCloseToOpenParams = new LinearLayout.LayoutParams(convertDpToPixel(8), convertDpToPixel(1));
-        betweenCloseToOpen.setLayoutParams(betweenCloseToOpenParams);
-        // android2.3ではsetAlpha()が使用できないため、以下で代用
-        AlphaAnimation animation = new AlphaAnimation(0.0f, 0.0f);
-        animation.setDuration(0);
-        animation.setFillAfter(true);
-        betweenCloseToOpen.startAnimation(animation);
+        if(noOfButtons != NCMBDialogPushConfiguration.DIALOG_DISPLAY_ONE_BUTTON){
 
-        // 表示ボタン作成
-        final Button openButton = new Button(this);
-        openButton.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        openButton.setTextColor(Color.WHITE);
-        openButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-        openButton.setHeight(convertDpToPixel(40));
-        openButton.setBackgroundDrawable(buttonDrawable);
-        openButton.setPadding(convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2));
-        openButton.setText(OPEN_BUTTON_LABEL);
-        openButton.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    GradientDrawable pushButtonDrawable = new GradientDrawable();
-                    pushButtonDrawable.setColor(Color.CYAN);
-                    pushButtonDrawable.setStroke(convertDpToPixel(2), Color.parseColor("#9F9F9F"));
-                    pushButtonDrawable.setCornerRadius(8f);
-                    openButton.setBackgroundDrawable(pushButtonDrawable);
-                } else {
-                    openButton.setBackgroundDrawable(buttonDrawable);
+            // ボタン間のスペース
+            View betweenCloseToOpen = new View(this);
+            LinearLayout.LayoutParams betweenCloseToOpenParams = new LinearLayout.LayoutParams(convertDpToPixel(8), convertDpToPixel(1));
+            betweenCloseToOpen.setLayoutParams(betweenCloseToOpenParams);
+            // android2.3ではsetAlpha()が使用できないため、以下で代用
+            AlphaAnimation animation = new AlphaAnimation(0.0f, 0.0f);
+            animation.setDuration(0);
+            animation.setFillAfter(true);
+            betweenCloseToOpen.startAnimation(animation);
+
+            // 表示ボタン作成
+            final Button openButton = new Button(this);
+            openButton.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+            openButton.setTextColor(Color.WHITE);
+            openButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+            openButton.setHeight(convertDpToPixel(40));
+            openButton.setBackgroundDrawable(buttonDrawable);
+            openButton.setPadding(convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2), convertDpToPixel(2));
+            openButton.setText(OPEN_BUTTON_LABEL);
+            openButton.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View arg0, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        GradientDrawable pushButtonDrawable = new GradientDrawable();
+                        pushButtonDrawable.setColor(Color.CYAN);
+                        pushButtonDrawable.setStroke(convertDpToPixel(2), Color.parseColor("#9F9F9F"));
+                        pushButtonDrawable.setCornerRadius(8f);
+                        openButton.setBackgroundDrawable(pushButtonDrawable);
+                    } else {
+                        openButton.setBackgroundDrawable(buttonDrawable);
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
-        openButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickOpenButton(v);
-            }
-        });
+            });
+            openButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onClickOpenButton(v);
+                }
+            });
 
-        // 小枠の下側に追加
+            // 小枠の下側に追加
+            // lowerLayout.addView(closeButton);
+            lowerLayout.addView(betweenCloseToOpen);
+            lowerLayout.addView(openButton);
+
+        }
+
         lowerLayout.addView(closeButton);
-        lowerLayout.addView(betweenCloseToOpen);
-        lowerLayout.addView(openButton);
         return lowerLayout;
     }
 
@@ -574,4 +586,19 @@ public class NCMBDialogActivity extends Activity {
         nm = (NotificationManager) v.getContext().getSystemService(NOTIFICATION_SERVICE);
         nm.cancelAll();
     }
+
+
+    /*
+     * Handle Close button action
+     *  Author: Trinh Thanh Binh
+     */
+    private void onClickCloseButton(View v){
+        finish();
+
+        // Delete the dialog
+        NotificationManager nm = (NotificationManager) v.getContext().getSystemService(NOTIFICATION_SERVICE);
+        nm.cancelAll();
+    }
+
+
 }

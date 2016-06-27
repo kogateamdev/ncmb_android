@@ -2,7 +2,7 @@ package com.nifty.cloud.mb.core;
 
 /**
  * NCMBDialogPushConfiguration is used to setting of dialog push notification
- * 
+ *
  */
 public class NCMBDialogPushConfiguration {
 	/**
@@ -21,9 +21,19 @@ public class NCMBDialogPushConfiguration {
 	 * display format that display original layout dialog
 	 */
 	public static final int DIALOG_DISPLAY_ORIGINAL = 0x04;
+	/**
+	 * display format that display dialog with only one button (Close button)
+	 */
+	public static final int DIALOG_DISPLAY_ONE_BUTTON = 0x01;
+	/**
+	 * display format that display dialog with 2 buttons (Close and Open button)
+	 */
+	public static final int DIALOG_DISPLAY_TWO_BUTTON = 0x02;
 
 	// display format
 	private int displayType;
+	// number of Buttons on Notification dialog
+	private int noOfButtons;
 
 	/**
 	 * Costructor<br>
@@ -33,6 +43,8 @@ public class NCMBDialogPushConfiguration {
 	public NCMBDialogPushConfiguration(){
 		//デフォルト非表示
 		this.displayType = DIALOG_DISPLAY_NONE;
+
+		this.noOfButtons = DIALOG_DISPLAY_TWO_BUTTON;
 	}
 
 	/**
@@ -63,4 +75,20 @@ public class NCMBDialogPushConfiguration {
 		return this.displayType;
 	}
 
+	/**
+	 * set the number of buttons on dialog setting
+	 * @param displayType setting of display format
+	 */
+	public void setNoOfButton(int noOfButtons){
+		this.noOfButtons = noOfButtons;
+	}
+
+	/**
+	 * get the number of buttons on dialog setting
+	 *
+	 * @return curernt display format
+	 */
+	public int getNoOfButton(){
+		return this.noOfButtons;
+	}
 }
