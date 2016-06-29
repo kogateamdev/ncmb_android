@@ -515,6 +515,8 @@ public class NCMBDialogActivity extends Activity {
             }
         });
 
+        lowerLayout.addView(closeButton);
+
         if(noOfButtons != NCMBDialogPushConfiguration.DIALOG_DISPLAY_ONE_BUTTON){
 
             // ボタン間のスペース
@@ -562,10 +564,8 @@ public class NCMBDialogActivity extends Activity {
             // lowerLayout.addView(closeButton);
             lowerLayout.addView(betweenCloseToOpen);
             lowerLayout.addView(openButton);
-
         }
 
-        lowerLayout.addView(closeButton);
         return lowerLayout;
     }
 
